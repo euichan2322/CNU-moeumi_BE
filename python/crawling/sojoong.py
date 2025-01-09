@@ -45,7 +45,6 @@ if response.status_code == 200:
 
     for item in mapped_list:
       item['business_group_id'] = 1
-      item['business_group_name'] = '소프트웨어중심대학사업단'
     print(mapped_list)
 
 
@@ -64,7 +63,6 @@ class Notice(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     business_group_id = Column(Integer, nullable = False)
-    business_group_name = Column(String(255), nullable = False)
     title = Column(String(255), nullable=False, unique=True)
     link = Column(String(255), nullable=False)
 
@@ -79,7 +77,7 @@ session = Session()
 Base.metadata.create_all(engine)
 
 # 데이터 insert 함수
-def insert_data(title, link, business_group_id, business_group_name):
+def insert_data(title, link, business_group_id):
     # 중복 체크: 이미 존재하는 제목이 있으면 종료
     existing_notice = session.query(Notice).filter_by(title=title).first()
     
@@ -88,7 +86,7 @@ def insert_data(title, link, business_group_id, business_group_name):
         return
 
     # 중복이 없으면 데이터 삽입
-    new_notice = Notice(title=title, link=link, business_group_id=business_group_id, business_group_name=business_group_name)
+    new_notice = Notice(title=title, link=link, business_group_id=business_group_id)
     session.add(new_notice)
     session.commit()
     print(f"'{title}'가 성공적으로 삽입되었습니다.")
@@ -96,7 +94,7 @@ def insert_data(title, link, business_group_id, business_group_name):
 # 데이터 삽입
 # 이것도 리팩토링 하기. 함수가 여러번 실행되는 for문인데, 중복이 있으면 for문까지 escape했으면 좋겠음.
 for item in mapped_list:
-    insert_data(item['title'], item['link'], item['business_group_id'], item['business_group_name'])
+    insert_data(item['title'], item['link'], item['business_group_id'])
 
 
 session.close()
