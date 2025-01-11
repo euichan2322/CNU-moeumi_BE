@@ -20,4 +20,5 @@ public class SignUpReq {
         public void setPassword(String password) {
                 this.password = password;
         }
+
 }

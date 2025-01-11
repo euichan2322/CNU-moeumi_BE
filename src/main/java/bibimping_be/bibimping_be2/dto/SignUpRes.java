@@ -1,16 +1,18 @@
 package bibimping_be.bibimping_be2.dto;
 
 public class SignUpRes {
-    private Long userPk;
+    private String message;
 
-    public Long getUserPk() {
-        return userPk;
+    public String getMessage() {
+        return message;
     }
 
-    public void setUserPk(Long userPk) {
-        this.userPk = userPk;
+    //setter가 굳이 필요한가??
+    public void setMessage(String message) {
+        this.message = message;
     }
-    public SignUpRes(Long userPk) {
-        this.userPk = userPk;
+
+    public SignUpRes(String message) {
+        this.message = message;
     }
 }
