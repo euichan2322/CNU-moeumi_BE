@@ -1,9 +1,6 @@
 package bibimping_be.bibimping_be2.controller;
 
-import bibimping_be.bibimping_be2.dto.LoginReq;
-import bibimping_be.bibimping_be2.dto.LoginRes;
-import bibimping_be.bibimping_be2.dto.SignUpReq;
-import bibimping_be.bibimping_be2.dto.SignUpRes;
+import bibimping_be.bibimping_be2.dto.*;
 
 //import bibimping_be.bibimping_be2.entity.Cookie;
 import bibimping_be.bibimping_be2.entity.User;
@@ -21,6 +18,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 
+import java.util.Map;
 import java.util.Optional;
 
 //public class CookieUtil
@@ -48,7 +46,7 @@ public class UserController {
     public ResponseEntity<SignUpRes> register(@RequestBody SignUpReq signUpReq) {
         try {
 
-            //생성자가 아닌 팩토리 메서드를 호출해 객체 생성.
+            //생성자X 팩토리 메서드로 객체 생성.
             User user = User.create(signUpReq.getAccountId(),signUpReq.getPassword());
 
             User saveUser = userRepository.save(user);
@@ -59,6 +57,18 @@ public class UserController {
             SignUpRes errorResponse = new SignUpRes("회원가입에 실패하였습니다.");
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @GetMapping("/id-check")
+    public ResponseEntity<IdCheckRes> idCheck(@RequestBody IdCheckReq idCheckReq) {
+        Optional<User> loginUser = userRepository.findByAccountId(idCheckReq.getAccountId());
+        if (loginUser.isEmpty()) {
+            IdCheckRes possibleId = new IdCheckRes("사용 가능한 아이디입니다.", true);
+            return new ResponseEntity<>(possibleId, HttpStatus.OK);
+        }
+        IdCheckRes impossibleId = new IdCheckRes("이미 사용중인 아이디입니다.", false);
+        return new ResponseEntity<>(impossibleId, HttpStatus.OK);
     }
 
 

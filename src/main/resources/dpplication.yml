@@ -1,7 +1,7 @@
 #mysql connector
 spring:
   datasource:
-    url: jdbc:mariadb://127.0.0.1:3306/bibimping2?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mariadb://152.67.222.171:3306/bibimping2
     username: hello
     password: password
     driver-class-name: org.mariadb.jdbc.Driver
@@ -10,12 +10,20 @@ spring:
       maximum-pool-size: 8
       connection-timeout: 30000 # connection 획득 시도 후 실패 시 대기 시간
 
+  session:
+    store-type: redis
+
+  data:
+    redis:
+      host: 152.67.222.171
+      port: 6379
+      password: password
+      
   jpa:
     #hibernate:
-    #ddl-auto: create
+      #ddl-auto: create
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
       # show_sql: true
       format_sql: true
 
