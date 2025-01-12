@@ -60,7 +60,22 @@ public class UserController {
     }
 
 
+    //Get요청은 json이 아니라 쿼리스트링으로 처리한다아는 사실.
+    //query-string ver
     @GetMapping("/id-check")
+    public ResponseEntity<IdCheckRes> idCheck(@RequestParam("accountId") String accountId) {
+        Optional<User> idCheck = userRepository.findByAccountId(accountId);
+        if (idCheck.isEmpty()) {
+            IdCheckRes possibleId = new IdCheckRes("사용 가능한 아이디입니다.", true);
+            return new ResponseEntity<>(possibleId, HttpStatus.OK);
+        }
+        IdCheckRes impossibleId = new IdCheckRes("이미 사용중인 아이디입니다.", false);
+        return new ResponseEntity<>(impossibleId, HttpStatus.OK);
+    }
+
+
+    //request-rep ver
+    /*@GetMapping("/id-check")
     public ResponseEntity<IdCheckRes> idCheck(@RequestBody IdCheckReq idCheckReq) {
         Optional<User> loginUser = userRepository.findByAccountId(idCheckReq.getAccountId());
         if (loginUser.isEmpty()) {
@@ -69,7 +84,7 @@ public class UserController {
         }
         IdCheckRes impossibleId = new IdCheckRes("이미 사용중인 아이디입니다.", false);
         return new ResponseEntity<>(impossibleId, HttpStatus.OK);
-    }
+    }*/
 
 
     @PostMapping("/login")

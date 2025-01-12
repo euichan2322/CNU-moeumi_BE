@@ -1,3 +1,4 @@
+/*
 package bibimping_be.bibimping_be2.dto;
 
 public class IdCheckReq {
@@ -11,3 +12,4 @@ public class IdCheckReq {
         this.accountId = accountId;
     }
 }
+*/
