@@ -40,7 +40,11 @@ public class UserController {
         this.userService = userService;
         this.sessionService = sessionService;
     }
+    @GetMapping("/debug")
+    public String debugEndpoint() {
 
+        return "This is a debug endpoint!";
+    }
 
     @PostMapping("/register")
     public ResponseEntity<SignUpRes> register(@RequestBody SignUpReq signUpReq) {
@@ -104,12 +108,25 @@ public class UserController {
             return new ResponseEntity<>(notPassword, HttpStatus.UNAUTHORIZED);
         }
 
-
-        // 정상 로그인이면 세션 새성
         String sessionId = sessionService.createSession(loginReq.getAccountId(), response);
         LoginRes ok = new LoginRes("로그인 성공", sessionId);
         return new ResponseEntity<>(ok, HttpStatus.OK);
-
     }
 
+
+        // 정상 로그인이면 세션 새성
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader(value = "Cookie", required = false) String cookie,
+                                         HttpServletResponse response) {
+        if (cookie == null || cookie.isEmpty()) {
+            return new ResponseEntity<>("쿠키가 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!sessionService.sessionExists(cookie)) {
+            return new ResponseEntity<>("유효하지 않은 세션입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        sessionService.deleteSession(cookie, response);
+        return new ResponseEntity<>("로그아웃되었습니다.", HttpStatus.OK);
+    }
 }
