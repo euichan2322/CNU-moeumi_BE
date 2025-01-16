@@ -27,9 +27,9 @@ public class UserService {
 
     @Transactional
     public Optional<User> login(LoginReq loginReq) {
-        return userRepository.findByAccountIdAndPassword(
-                loginReq.getAccountId(),
-                loginReq.getPassword()
+        return userRepository.findByAccountId(
+                loginReq.getAccountId()
+                //,loginReq.getPassword()
         );
     }
 
