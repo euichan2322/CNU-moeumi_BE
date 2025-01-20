@@ -66,7 +66,7 @@ public class MypageService {
             throw new RuntimeException("JSON 변환에 실패했습니다.", e);
         }
     }
-
+/*
     @Transactional
     public void saveBusinessGroups(String accountId, List<BusinessGroup> businessGroups) {
         for (BookmarkGroupRe.BusinessGroup dto : businessGroups) {

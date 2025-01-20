@@ -8,7 +8,9 @@ import bibimping_be.bibimping_be2.entity.User;
 import bibimping_be.bibimping_be2.repository.UserRepository;
 import bibimping_be.bibimping_be2.service.SessionService;
 import bibimping_be.bibimping_be2.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +89,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginRes> login(@RequestBody LoginReq loginReq, HttpServletResponse response) {
+    public ResponseEntity<LoginRes> login(@RequestBody LoginReq loginReq, HttpServletRequest request) {
         Optional<User> loginUser = userService.login(loginReq);
 
         // 사용자 존재 여부 판단
@@ -103,8 +105,10 @@ public class UserController {
             return new ResponseEntity<>(notPassword, HttpStatus.UNAUTHORIZED);
         }
 
-        String sessionId = sessionService.createSession(loginReq.getAccountId(), response);
-        LoginRes ok = new LoginRes("로그인 성공", sessionId);
+//        String sessionId = sessionService.createSession(loginReq.getAccountId(), response);
+        HttpSession session = request.getSession();
+        session.setAttribute("id", user.getId());
+        LoginRes ok = new LoginRes("로그인 성공", session.getId());
         return new ResponseEntity<>(ok, HttpStatus.OK);
     }
 

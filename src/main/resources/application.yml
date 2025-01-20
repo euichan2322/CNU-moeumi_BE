@@ -18,7 +18,15 @@ spring:
       host: 152.67.222.171
       port: 6379
       password: password
-      
+
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
+        http-only: true
+
   jpa:
     #hibernate:
       #ddl-auto: create

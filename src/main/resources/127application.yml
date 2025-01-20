@@ -28,6 +28,14 @@ spring:
       # show_sql: true
       format_sql: true
 
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
+        http-only: true
+
 logging.level:
   org.hibernate.SQL: debug
   #org.hibernate.type: trace

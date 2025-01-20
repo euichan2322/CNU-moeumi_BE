@@ -1,6 +1,7 @@
 package bibimping_be.bibimping_be2.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,15 +35,16 @@ public class SessionService {
         String sessionKey = "accountId:"+ accountId + "SESSION:" + sessionId;
         redisTemplate.opsForValue().set(sessionKey, accountId, 60*60*24, TimeUnit.SECONDS);
 
-        // 세션 ID 쿠키값으로.
-        ResponseCookie responseCookie =
+        // 세션 ID 쿠키값으로.2fu
+        /*ResponseCookie responseCookie =
              ResponseCookie.from("SESSIONID", sessionKey)
                      .secure(true)
                      .maxAge(60 * 60 * 24)
                      .path("/")
                      .httpOnly(true)
-                     .domain("localhost")
-                     .build();
+                     .sameSite("None")
+                     .domain("127.0.0.1")
+                     .build();*/
 
 
 /*
@@ -51,12 +53,13 @@ public class SessionService {
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
         cookie.setHttpOnly(true);
-        cookie.setDomain("localhost:5500");
+        //cookie.setDomain("localhost:5500");
         response.addCookie(cookie);
         return sessionKey;*/
-
-        response.addHeader("Set-Cookie", responseCookie.toString());
-        return sessionKey;
+        //response.addCookie(responseCookie);
+        //response.addHeader("Set-Cookie", responseCookie.toString());
+        //return sessionKey;
+        return null;
     }
 
     //세션 조회
