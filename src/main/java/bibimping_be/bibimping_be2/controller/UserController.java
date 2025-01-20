@@ -3,22 +3,17 @@ package bibimping_be.bibimping_be2.controller;
 import bibimping_be.bibimping_be2.dto.*;
 
 //import bibimping_be.bibimping_be2.entity.Cookie;
+import bibimping_be.bibimping_be2.dto.SignUpReq;
 import bibimping_be.bibimping_be2.entity.User;
 import bibimping_be.bibimping_be2.repository.UserRepository;
 import bibimping_be.bibimping_be2.service.SessionService;
 import bibimping_be.bibimping_be2.service.UserService;
-import jakarta.persistence.Access;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
-
-import java.util.Map;
 import java.util.Optional;
 
 //public class CookieUtil

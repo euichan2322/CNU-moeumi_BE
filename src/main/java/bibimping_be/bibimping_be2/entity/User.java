@@ -18,7 +18,7 @@ public class User {
     public Long getId() {
         return id;
     }
-    public String getAccount_id() {
+    public String getAccountId() {
         return accountId;
     }
     public String getPassword() {
@@ -28,7 +28,7 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
-    public void setAccount_id(String accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
     public void setPassword(String password) {
@@ -42,6 +42,7 @@ public class User {
         this.accountId = accountId;
         this.password = password;
     }
+
 
     //Lombok의 AllArgsConstructor와 같은 기능은 아닌듯...? id값이 없으니까... 으아ㅏㅏㅏ 헷갈린다. 프로젝트 끝나면 공부하기.
     public static User create(String accountId, String password) {
