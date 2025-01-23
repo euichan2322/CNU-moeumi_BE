@@ -60,15 +60,12 @@ public class AiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RecommendationRes("유효하지 않은 사용자 ID 타입입니다."));
         }
 
-        List<RecoomendationReq>  = new tagDto(recoomendationReq.getTag())
-        List<BookmarkGroupMessageDto> messageList = request.getMessage();
-        if (messageList == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RecommendationRes("message 필드가 누락되었습니다."));
-        }
-
-        for (BookmarkGroupMessageDto dto : messageList) {
-            mypageService.updateBookmarkGroupLike(userId, dto.getBusinessGroupName(), dto.getLiked());
-        }
+        // ai api에 요청.
+        // ai 요청 바디의 태그는 BE 요청 바디의 태그
+        // 레파지토리에서 사용자가 최근에 누른 좋아요 3개 가져오기
+        // 가져온 값은 ai 요청 바디의 타이틀의 타이틀로.
+        // resclient
+        // 불러서 받아온 값은 그대로
 
         return ResponseEntity.ok(request);
     }

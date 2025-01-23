@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagDto {
-    private final List<> tag ;
+    private final List<String> tag ;
 
-    public TagDto(List tag) {
+    public TagDto(List<String> tag) {
         this.tag = tag;
     }
 
-    public List getTag() {
+    public List<String> getTag() {
         return tag;
     }
 }
