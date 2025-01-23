@@ -9,23 +9,23 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import Config
 
+
+
 #크롤링 부분. 이거 함수화, 클래스화 해서 리팩토링 하기...
-url = 'https://www.sojoong.kr/www/'
+#url은 계속 달라짐.
+# https://www.jnu.ac.kr/WebApp/web/HOM/COM/Board/board.aspx?boardID=5&cate=0&page=1&renderID=0.05671684884159345
+# https://www.jnu.ac.kr/WebApp/web/HOM/COM/Board/board.aspx?boardID=5&bbsMode=list&cate=0&page=2
+url = 'https://www.jnu.ac.kr/WebApp/web/HOM/COM/Board/board.aspx?boardID=5&bbsMode=list&cate=0&page=30'
 
 response = requests.get(url)
 
 if response.status_code == 200:
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-    ul = soup.select_one('#mainNotice > ul')
-    #print(ul)
-    titles = ul.select('li > a > strong')
-    links = ul.select('li')
-
-
+    ul = soup.select_one('#grvw_board_list > tbody')
+    len_title = ul.find_all('a')
+    links = ul.select('tr > td')
     links = [a.get('href') for a in ul.find_all('a')]
-    titles = [title.get_text() for title in titles]
-
     #titles = [title.get_text() for title in titles]
     # 출력하여 확인
     #for link in links:
@@ -38,16 +38,28 @@ if response.status_code == 200:
     #    print(title.get_text())
 
     '''
-    for link in links:
-        print(link.get_text())
-    '''
+    # for link in links:
+    #     print(link.get_text())
+    # '''
+    titles = []
+    timestamp = []
+    for i in range(len(len_title)):
+        url2 = 'https://www.jnu.ac.kr' + links[i]
+        respones2 = requests.get(url2)
+        if respones2.status_code == 200:
+            html2 = respones2.text
+            soup2 = BeautifulSoup(html2, 'html.parser')
+            titles.append(soup2.select('#ctl00_ctl00_ContentPlaceHolder1_PageContent_ctl00_lbl_Title')[0].get_text())
+            timestamp.append(soup2.select('#ctl00_ctl00_ContentPlaceHolder1_PageContent_ctl00_lbl_WriteDate')[0].get_text()[3:].replace('.','-') + ':00')
 
-    mapped_list = [{"title": titles[i], "link": links[i]} for i in range(len(titles))]
+        else :
+            print(respones2.status_code)
+    mapped_list = [{"title": titles[i], "link": links[i], "timestamp" : timestamp[i]} for i in range(len(titles))]
 
     for item in mapped_list:
-      item['business_group_id'] = 1
+        item['business_group_id'] = 3
     print(mapped_list)
-
+    #mistake
 
 else:
     print(response.status_code)
@@ -100,3 +112,5 @@ for item in mapped_list:
 
 
 session.close()
+
+
