@@ -1,6 +1,7 @@
 package bibimping_be.bibimping_be2.controller;
 
 
+import bibimping_be.bibimping_be2.dto.Req.BookmarkGroupUpdateReq;
 import bibimping_be.bibimping_be2.dto.Res.BookmarkGroupMessageDto;
 import bibimping_be.bibimping_be2.dto.Res.MypageRes;
 import bibimping_be.bibimping_be2.entity.User;
@@ -69,7 +70,7 @@ public class ApiController {
 
         // 쿠키에 SESSIONID가 없으면
         if (sessionId == null) {
-            MypageRes mypageRes = new MypageRes(null, "쿠키가 없습니다");
+            MypageRes mypageRes = new MypageRes(null, "로그인 후 이용해 주세요");
             return new ResponseEntity<>(mypageRes, HttpStatus.UNAUTHORIZED);
         }
 
@@ -164,8 +165,8 @@ public class ApiController {
         return new ResponseEntity<>(ok, HttpStatus.OK);
     }*/
     @PostMapping("/mypage")
-    public ResponseEntity<String> updateLikes(
-            @RequestBody Map<String, List<BookmarkGroupMessageDto>> request,
+    public ResponseEntity<Object> updateLikes(
+            @RequestBody BookmarkGroupUpdateReq request,
             HttpServletRequest httpRequest
     ) {
         HttpSession session = httpRequest.getSession(false);
@@ -184,7 +185,7 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID 타입입니다.");
         }
 
-        List<BookmarkGroupMessageDto> messageList = request.get("message");
+        List<BookmarkGroupMessageDto> messageList = request.getMessage();
         if (messageList == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("message 필드가 누락되었습니다.");
         }
@@ -193,7 +194,7 @@ public class ApiController {
             mypageService.updateBookmarkGroupLike(userId, dto.getBusinessGroupName(), dto.getLiked());
         }
 
-        return ResponseEntity.ok("즐겨찾기가 저장되었습니다.");
+        return ResponseEntity.ok(request);
     }
 
 

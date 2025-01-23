@@ -1,6 +1,7 @@
 package bibimping_be.bibimping_be2.controller;
 
 import bibimping_be.bibimping_be2.dto.Res.MainPageResponseDto;
+import bibimping_be.bibimping_be2.dto.Res.MessageResponse;
 import bibimping_be.bibimping_be2.repository.UserRepository;
 import bibimping_be.bibimping_be2.service.MainPageService;
 import bibimping_be.bibimping_be2.service.MypageService;
@@ -61,15 +62,16 @@ public class MainPageController {
     }
 
 
-    @PostMapping("/bookmarks")
-    public ResponseEntity<String> updateAlarmLike(
+    @PostMapping("/bookmarks/")
+    public ResponseEntity<MessageResponse> updateAlarmLike(
             @RequestBody Map<String, Object> request,
             HttpServletRequest httpRequest
     ) {
         // 쿠키에서 사용자 ID 가져오기
         HttpSession session = httpRequest.getSession(false);
+
         if (session == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("세션이 만료되었습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("세션이 만료되었습니다."));
         }
 
         Object userIdObj = session.getAttribute("id");
@@ -80,15 +82,15 @@ public class MainPageController {
         } else if (userIdObj instanceof Long) {
             userId = (Long) userIdObj;
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID 타입입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("유효하지 않은 사용자 ID 타입입니다."));
         }
 
-        // 요청에서 alarmId와 liked 값 가져오기
+        // 요청에서 alarmId와 like 값 가져오기
         Object alarmIdObj = request.get("alarmId");
-        Object likedObj = request.get("liked");
+        Object likedObj = request.get("like");
 
         if (alarmIdObj == null || likedObj == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("alarmId와 liked 값이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("alarmId와 liked 값이 필요합니다."));
         }
 
         Long alarmId;
@@ -98,11 +100,11 @@ public class MainPageController {
             alarmId = Long.parseLong(alarmIdObj.toString());
             liked = Integer.parseInt(likedObj.toString());
         } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("alarmId와 liked 값은 숫자여야 합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("alarmId와 liked 값은 숫자여야 합니다."));
         }
 
         if (liked != 0 && liked != 1) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("liked 값은 0 또는 1이어야 합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("liked 값은 0 또는 1이어야 합니다."));
         }
 
         // 서비스 호출
@@ -110,9 +112,9 @@ public class MainPageController {
 
 
         if (success) {
-            return ResponseEntity.ok("알람 좋아요 상태가 업데이트되었습니다.");
+            return ResponseEntity.ok(new MessageResponse("알람 좋아요 상태가 업데이트되었습니다."));
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알람 좋아요 업데이트에 실패했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("알람 좋아요 업데이트에 실패했습니다."));
         }
     }
 

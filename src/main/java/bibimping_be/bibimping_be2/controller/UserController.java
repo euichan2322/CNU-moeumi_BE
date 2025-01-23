@@ -3,6 +3,7 @@ package bibimping_be.bibimping_be2.controller;
 import bibimping_be.bibimping_be2.dto.*;
 
 //import bibimping_be.bibimping_be2.entity.Cookie;
+import bibimping_be.bibimping_be2.dto.Req.BookmarkGroupUpdateReq;
 import bibimping_be.bibimping_be2.dto.SignUpReq;
 import bibimping_be.bibimping_be2.entity.User;
 import bibimping_be.bibimping_be2.repository.UserRepository;
@@ -87,7 +88,19 @@ public class UserController {
         return new ResponseEntity<>(impossibleId, HttpStatus.OK);
     }*/
 
-
+    @GetMapping("/iscookie")
+    public ResponseEntity<Object> iscookie(
+            HttpServletRequest httpRequest
+    ) {
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("쿠키 없음");
+        }
+        if (session != null) {
+            return ResponseEntity.status(HttpStatus.OK).body("쿠키 있음");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("로그아웃");
+    }
     @PostMapping("/login")
     public ResponseEntity<LoginRes> login(@RequestBody LoginReq loginReq, HttpServletRequest request) {
         Optional<User> loginUser = userService.login(loginReq);
@@ -115,17 +128,11 @@ public class UserController {
 
         // 정상 로그인이면 세션 새성
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "Cookie", required = false) String cookie,
-                                         HttpServletResponse response) {
-        if (cookie == null || cookie.isEmpty()) {
-            return new ResponseEntity<>("쿠키가 없습니다.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // 현재 세션 가져오기 (존재하지 않으면 null 반환)
+        if (session != null) {
+            session.invalidate(); // 세션 무효화
         }
-
-        if (!sessionService.sessionExists(cookie)) {
-            return new ResponseEntity<>("유효하지 않은 세션입니다.", HttpStatus.BAD_REQUEST);
-        }
-
-        sessionService.deleteSession(cookie, response);
-        return new ResponseEntity<>("로그아웃되었습니다.", HttpStatus.OK);
+        return ResponseEntity.ok("로그아웃되었습니다.");
     }
 }

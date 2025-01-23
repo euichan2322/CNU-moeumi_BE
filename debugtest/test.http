@@ -9,4 +9,65 @@ Content-Type: application/json
   "password": "test"
 }
 
+###
 
+POST http://127.0.0.1:8080/api/users/logout
+Cookie:
+
+###
+POST http://localhost:8080/api/mypage
+Content-Type: application/json
+Cookie: SESSION=M2VmNDRmZjktYzZhMy00Mjg4LThjZjItYTNjNDRhYjgxZTMx
+
+{
+  "message": [
+    {
+      "businessGroupName": "potal",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "haksa",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "janghack",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "chjin",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "EAI",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "chahyuck",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "inhyuck",
+      "liked": 1
+    },
+    {
+      "businessGroupName": "sojoong",
+      "liked": 1
+    }
+  ]
+}
+
+###
+POST https://bibimping/api/users/logout
+Cookie: SESSION=YTIxZGYzM2QtOGY0Ny00ODkzLThmYTMtZGZmYWFhZmM2MmE1
+
+###
+POST 127.0.0.1:8080/api/users/logout
+Cookie: SESSION=OWYzZThlNzMtYWUwNS00YzVhLThjYWMtN2JhMGQxMjY0YWUx
+
+
+###
+POST https://bibimping.euichan.com/api/bookmarks/
+Cookie: SESSION=MzZhODkxYzktOGVlNS00NmI3LTk1NDgtYTc2MzMzOWQyYTRm
+Content-Type: application/json
+
+{"alarmId":"1","liked":"1"}
