@@ -3,14 +3,12 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 from datetime import datetime, timedelta
 from flask import Flask, jsonify
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 app = Flask(__name__)
 
-DATABASE_URI = os.getenv('DATABASE_URI')
+DATABASE_URI = "mysql+pymysql://hello:password@152.67.222.171:3306/bibimping2"
 engine = create_engine(DATABASE_URI)
 
 # 모델 로드
@@ -19,11 +17,13 @@ model = SentenceTransformer('jhgan/ko-sroberta-multitask')
 # 게시물 그룹 정보 매핑
 group_mapping = {
     "1": {"business_group_name": "sojoong", "business_group_id": "1"},
-    "2": {"business_group_name": "ingong", "business_group_id": "2"},
-    "3": {"business_group_name": "notice_all", "business_group_id": "3"},
-    "4": {"business_group_name": "notice_haksa", "business_group_id": "4"},
-    "5": {"business_group_name": "notice_janghak", "business_group_id": "5"},
-    "6": {"business_group_name": "notice_chiup", "business_group_id": "6"}
+    "2": {"business_group_name": "inhyuck", "business_group_id": "2"},
+    "3": {"business_group_name": "potal", "business_group_id": "3"},
+    "4": {"business_group_name": "haksa", "business_group_id": "4"},
+    "5": {"business_group_name": "janghack", "business_group_id": "5"},
+    "6": {"business_group_name": "chjin", "business_group_id": "6"},    
+    "7": {"business_group_name": "chahyuck", "business_group_id": "7"},
+    "8": {"business_group_name": "EAI", "business_group_id": "8"}
 }
 # 현재 시점에서 3개월 전 날짜 계산
 three_months_ago = datetime.now() - timedelta(days=90)
@@ -133,4 +133,4 @@ def search():
 
 
 if __name__ == '__main__':
-    app.run(port=2000, debug=True)
+    app.run(port=80, debug=True)

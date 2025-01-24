@@ -12,4 +12,5 @@ public class RecommendationRes {
     public Object getResponse() {
         return response;
     }
+
 }

@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface BookmarkAlarmRepository extends JpaRepository<BookmarkAlarm, Long> {
     List<BookmarkAlarm> findTop5ByUserIdAndAlarm_BusinessGroupId(Long userId, Long businessGroupId, Pageable pageable);
     Optional<BookmarkAlarm> findByUserIdAndAlarmId(Long userId, Long alarmId);
-
+    List<BookmarkAlarm> findTop3ByUserIdOrderByIdDesc(Long userId);
 }

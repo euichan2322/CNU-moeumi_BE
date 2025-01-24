@@ -73,20 +73,32 @@ public class MainPageService {
         List<BusinessGroup> businessGroups = businessGroupRepository.findAll();
         List<MainPageResponseDto> response = new ArrayList<>();
 
+        // 각 비즈니스 그룹에 대해 알림을 처리
         for (BusinessGroup businessGroup : businessGroups) {
             // BookmarkAlarm 테이블에서 사용자의 알림과 좋아요 상태 가져오기
             List<BookmarkAlarm> bookmarkAlarms = bookmarkAlarmRepository.findTop5ByUserIdAndAlarm_BusinessGroupId(userId, businessGroup.getId(), PageRequest.of(0, 5));
             List<AlarmDto> alarmDtos = new ArrayList<>();
 
-            // 가져온 BookmarkAlarm과 일치하는 알림들을 AlarmDto로 변환
-            for (BookmarkAlarm bookmarkAlarm : bookmarkAlarms) {
-                Alarm alarm = bookmarkAlarm.getAlarm(); // 알림 객체 가져오기
+            // noneCookieGetAlarms에서 가져온 알림을 사용하여 알림 DTO를 구성
+            List<AlarmDto> noneCookieAlarms = getNoneCookieAlarmsForBusinessGroup(businessGroup.getId()); // 이 메서드는 noneCookieGetAlarms에서 가져온 데이터를 처리
+
+            // noneCookieAlarms에서 각 알림의 liked 값을 사용자가 설정한 값으로 변경
+            for (AlarmDto noneCookieAlarm : noneCookieAlarms) {
+                // 해당 알림에 대한 BookmarkAlarm을 찾아서 사용자의 liked 값을 적용
+                Optional<BookmarkAlarm> bookmarkAlarm = bookmarkAlarms.stream()
+                        .filter(b -> b.getAlarm().getId().equals(noneCookieAlarm.getAlarmId()))
+                        .findFirst();
+
+                // 사용자가 설정한 liked 값을 적용 (없으면 기본값 0)
+                Integer liked = bookmarkAlarm.map(BookmarkAlarm::getLiked).orElse(0);
+
+                // 알림 DTO에 liked 값 추가
                 alarmDtos.add(new AlarmDto(
-                        alarm.getId(),
-                        alarm.getTitle(),
-                        alarm.getLink(),
-                        alarm.getAlarmAt(),
-                        bookmarkAlarm.getLiked() // 사용자가 설정한 liked 값 반환
+                        noneCookieAlarm.getAlarmId(),
+                        noneCookieAlarm.getTitle(),
+                        noneCookieAlarm.getUrl(),
+                        noneCookieAlarm.getTimestamp(),
+                        liked // 사용자 설정 liked 값
                 ));
             }
 
@@ -97,6 +109,25 @@ public class MainPageService {
             ));
         }
         return response;
+    }
+
+    // noneCookieGetAlarms에서 해당 비즈니스 그룹의 알림 리스트를 가져오는 메서드 (예시)
+    private List<AlarmDto> getNoneCookieAlarmsForBusinessGroup(Long businessGroupId) {
+        // noneCookieGetAlarms에서 해당 비즈니스 그룹에 해당하는 알림을 가져오는 로직 작성
+        List<Alarm> alarms = alarmRepository.findTop5ByBusinessGroupId(businessGroupId, PageRequest.of(0, 5));
+        List<AlarmDto> alarmDtos = new ArrayList<>();
+
+        for (Alarm alarm : alarms) {
+            alarmDtos.add(new AlarmDto(
+                    alarm.getId(),
+                    alarm.getTitle(),
+                    alarm.getLink(),
+                    alarm.getAlarmAt(),
+                    0 // 기본 liked 값은 0
+            ));
+        }
+
+        return alarmDtos;
     }
 
 

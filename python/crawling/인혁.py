@@ -2,26 +2,51 @@
 import requests, json
 from bs4 import BeautifulSoup
 
+from sqlalchemy.sql import func
+
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import Config
 
-
 #크롤링 부분. 이거 함수화, 클래스화 해서 리팩토링 하기...
-url = 'https://jnu.nccoss.kr/www/'
+url = 'https://www.aicoss.kr/www/'
 
 response = requests.get(url)
 
 if response.status_code == 200:
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-    ul = soup.select_one('#content > article.mainContent-wrap.mainContent-board > div > section.mainLibrary-wrap > div.mainLibrary-list.grayBg-wrap')
-    titles = ul.select('ul > li > a > span > strong')
+    ul = soup.select_one('#mainNotice > ul')
+    #print(ul)
+    titles = ul.select('li > a > strong')
     links = ul.select('li')
 
+
     links = [a.get('href') for a in ul.find_all('a')]
+
     titles = [title.get_text() for title in titles]
+    len_title = ul.find_all('li > a > strong')
+    new_titles = []
+    timestamp = []
+
+    for i in range(len(titles)):
+            url2 = 'https://www.aicoss.kr' + links[i]
+            print(url2)
+            respones2 = requests.get(url2)
+            print(respones2.status_code)
+            if respones2.status_code == 200:
+                html2 = respones2.text
+                soup2 = BeautifulSoup(html2, 'html.parser')
+                new_titles.append(soup2.select('#\#content > section > div.viewContainer > div.basicBoard-view.maxWidth > div.basicBoard-Title > h3')[0].get_text())
+                timestamp.append(soup2.select('#\#content > section > div.viewContainer > div.basicBoard-view.maxWidth > div.basicBoard-Title > div > ul > li')[0].get_text())
+            else :
+                print(respones2.status_code)
+    mapped_list = [{"title": new_titles[i], "link": links[i], "timestamp" : timestamp[i]} for i in range(len(titles))]
+
+
+    
+
     #titles = [title.get_text() for title in titles]
     # 출력하여 확인
     #for link in links:
@@ -37,27 +62,16 @@ if response.status_code == 200:
     for link in links:
         print(link.get_text())
     '''
+
     
-    timestamp = []
-    for i in range(len(titles)):
-        url2 = url + links[i].replace('/www/','')
-        respones2 = requests.get(url2)
-        if respones2.status_code == 200:
-            html2 = respones2.text
-            soup2 = BeautifulSoup(html2, 'html.parser')
-            timestamp.append(soup2.select_one('#content > div > article.viewContainer-wrap > section > div.viewContainer-info > ul > li').text)
-        else :
-            print(respones2.status_code)
-    mapped_list = [{"title": titles[i], "link": links[i], "timestamp" : timestamp[i]} for i in range(len(titles))]
 
     for item in mapped_list:
-        item['business_group_id'] = 7
+      item['business_group_id'] = 2
     print(mapped_list)
 
 
 else:
     print(response.status_code)
-
 
 
 
@@ -90,7 +104,7 @@ def insert_data(title, link, business_group_id, alarm_at):
     # 중복 체크: 이미 존재하는 제목이 있으면 종료
     existing_notice = (
     session.query(Notice)
-    .filter(Notice.title == title, Notice.business_group_id == 7)
+    .filter(Notice.title == title, Notice.business_group_id == 2)
     .first()
 )
 
@@ -111,5 +125,3 @@ for item in mapped_list:
 
 
 session.close()
-
-

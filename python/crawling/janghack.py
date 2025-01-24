@@ -2,30 +2,24 @@
 import requests, json
 from bs4 import BeautifulSoup
 
-from sqlalchemy.sql import func
-
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import Config
 
+
 #크롤링 부분. 이거 함수화, 클래스화 해서 리팩토링 하기...
-url = 'https://www.sojoong.kr/www/'
+url = 'https://www.jnu.ac.kr/WebApp/web/HOM/COM/Board/board.aspx?boardID=5&cate=8&page=1&renderID=0.45770188789018973'
 
 response = requests.get(url)
 
 if response.status_code == 200:
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-    ul = soup.select_one('#mainNotice > ul')
-    #print(ul)
-    titles = ul.select('li > a > strong')
-    links = ul.select('li')
-
-
+    ul = soup.select_one('#grvw_board_list > tbody')
+    len_title = ul.find_all('a')
+    links = ul.select('tr > td')
     links = [a.get('href') for a in ul.find_all('a')]
-    titles = [title.get_text() for title in titles]
-
     #titles = [title.get_text() for title in titles]
     # 출력하여 확인
     #for link in links:
@@ -38,16 +32,27 @@ if response.status_code == 200:
     #    print(title.get_text())
 
     '''
-    for link in links:
-        print(link.get_text())
-    '''
-
-    mapped_list = [{"title": titles[i], "link": links[i]} for i in range(len(titles))]
+    # for link in links:
+    #     print(link.get_text())
+    # '''
+    titles = []
+    timestamp = []
+    for i in range(len(len_title)):
+        url2 = 'https://www.jnu.ac.kr' + links[i]
+        respones2 = requests.get(url2)
+        if respones2.status_code == 200:
+            html2 = respones2.text
+            soup2 = BeautifulSoup(html2, 'html.parser')
+            titles.append(soup2.select('#ctl00_ctl00_ContentPlaceHolder1_PageContent_ctl00_lbl_Title')[0].get_text())
+            timestamp.append(soup2.select('#ctl00_ctl00_ContentPlaceHolder1_PageContent_ctl00_lbl_WriteDate')[0].get_text()[3:])
+        else :
+            print(respones2.status_code)
+    mapped_list = [{"title": titles[i], "link": links[i], "timestamp" : timestamp[i]} for i in range(len(titles))]
 
     for item in mapped_list:
-      item['business_group_id'] = 1
+        item['business_group_id'] = 5
     print(mapped_list)
-
+    #mistake
 
 else:
     print(response.status_code)
@@ -81,7 +86,12 @@ Base.metadata.create_all(engine)
 # 데이터 insert 함수
 def insert_data(title, link, business_group_id, alarm_at):
     # 중복 체크: 이미 존재하는 제목이 있으면 종료
-    existing_notice = session.query(Notice).filter_by(title=title).first()
+    existing_notice = (
+    session.query(Notice)
+    .filter(Notice.title == title, Notice.business_group_id == 5)
+    .first()
+)
+
 
     if existing_notice:
       print(f"'{title}'가 이미 존재합니다. 종료합니다.")
@@ -100,3 +110,5 @@ for item in mapped_list:
 
 
 session.close()
+
+
